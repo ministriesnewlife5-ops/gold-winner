@@ -1,5 +1,46 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Gold Winner — Mother’s Day Microsite
+
+### Environment Variables
+
+This project uses a Cloudinary upload + Google Sheets/Drive service-account workflow.
+
+Add these environment variables in **Vercel Project Settings** (or your local env). Note: `.env*` files are ignored by this repo.
+
+#### Cloudinary
+
+- `CLOUDINARY_CLOUD_NAME`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
+
+#### Google (Service Account)
+
+- `GOOGLE_SERVICE_ACCOUNT_JSON`
+  - The full service account JSON as a **single-line string**.
+  - Ensure `private_key` newlines are preserved (keep `\n` escapes if needed).
+
+#### Google Sheets
+
+- `GOOGLE_SHEETS_SPREADSHEET_ID`
+  - The spreadsheet ID from the Google Sheets URL.
+- `GOOGLE_SHEETS_SHEET_NAME`
+  - Example: `Sheet1`
+
+### Google Sheet Columns
+
+The backend appends rows with columns:
+
+`Unique ID | Timestamp | Mother Name | Template | Image URL | Address | Phone | Delivery Status`
+
+### Google Drive Output
+
+The backend creates:
+
+- Main folder: `Gold_Winner_MothersDay_2026`
+- Subfolder: `[UniqueID]_[MotherName]`
+  - Uploads: the image + a JSON metadata file
+
 ## Getting Started
 
 First, run the development server:
