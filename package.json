@@ -4,17 +4,27 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "backend:dev": "node --watch backend/src/server.js",
+    "backend:start": "node backend/src/server.js",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
   },
   "dependencies": {
-    "cloudinary": "^2.7.0",
+    "@supabase/supabase-js": "^2.53.0",
+    "archiver": "^7.0.1",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
     "framer-motion": "^12.38.0",
-    "googleapis": "^156.0.0",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
     "next": "16.2.4",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

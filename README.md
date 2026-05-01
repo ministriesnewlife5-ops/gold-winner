@@ -1,77 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Gold Winner — Mother’s Day Microsite
 
-## Gold Winner — Mother’s Day Microsite
+This project now uses a dedicated **Node.js + Express + Supabase** backend.
 
-### Environment Variables
+## Backend Architecture
 
-This project uses a Cloudinary upload + Google Sheets/Drive service-account workflow.
+Backend code lives in [backend/src](backend/src) with clean modular structure:
 
-Add these environment variables in **Vercel Project Settings** (or your local env). Note: `.env*` files are ignored by this repo.
+- [backend/src/routes](backend/src/routes)
+- [backend/src/controllers](backend/src/controllers)
+- [backend/src/services](backend/src/services)
+- [backend/src/config](backend/src/config)
 
-#### Cloudinary
+## Why Supabase Storage (not Base64 in DB)
 
-- `CLOUDINARY_CLOUD_NAME`
-- `CLOUDINARY_API_KEY`
-- `CLOUDINARY_API_SECRET`
+Chosen: **Supabase Storage**.
 
-#### Google (Service Account)
+Reasons:
 
-- `GOOGLE_SERVICE_ACCOUNT_JSON`
-  - The full service account JSON as a **single-line string**.
-  - Ensure `private_key` newlines are preserved (keep `\n` escapes if needed).
+1. Images are heavy binary objects; storing as Base64 in DB increases size by ~33% and slows reads/writes.
+2. Object storage is optimized for files, cheaper at scale, and better for traffic spikes.
+3. Easier delivery and download workflows for image files.
+4. Signed URLs allow secure, temporary access to personal photos.
 
-#### Google Sheets
+## Auth Choice: Signed URLs (not public)
 
-- `GOOGLE_SHEETS_SPREADSHEET_ID`
-  - The spreadsheet ID from the Google Sheets URL.
-- `GOOGLE_SHEETS_SHEET_NAME`
-  - Example: `Sheet1`
+Chosen: **Signed URLs** for image access in admin responses.
 
-### Google Sheet Columns
+Reason: user-uploaded personal photos should not be globally public. Signed URLs provide short-lived secure access while keeping storage private.
 
-The backend appends rows with columns:
+## Export Format Choice: JSON (not CSV)
 
-`Unique ID | Timestamp | Mother Name | Template | Image URL | Address | Phone | Delivery Status`
+Chosen: **JSON** for details download.
 
-### Google Drive Output
+Reason: field structure is nested and may evolve (for example image metadata, optional fields, audit fields). JSON preserves structure safely without flattening loss and is easier for downstream APIs.
 
-The backend creates:
+## Database Schema
 
-- Main folder: `Gold_Winner_MothersDay_2026`
-- Subfolder: `[UniqueID]_[MotherName]`
-  - Uploads: the image + a JSON metadata file
+SQL file: [backend/sql/schema.sql](backend/sql/schema.sql)
 
-## Getting Started
+Tables:
 
-First, run the development server:
+- `orders`
+  - `id` uuid pk
+  - `name`
+  - `message`
+  - `template_id`
+  - `delivery_address`
+  - `phone_number`
+  - `created_at`
+- `order_images`
+  - `id` uuid pk
+  - `order_id` uuid fk -> `orders.id`
+  - `image_path`
+  - `created_at`
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## API Endpoints
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Public
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `POST /order`
+  - multipart/form-data
+  - fields: `name` (or `motherName`), `message` (or `receiverName`), `template_id` (or `template`), `delivery_address` (or `address`), `phone_number` (or `phone`)
+  - file field: `image` (or `photo`)
+  - stores image to Supabase Storage + metadata in DB
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Admin (Supabase Auth protected)
 
-## Learn More
+- `GET /admin/orders`
+  - returns all submissions with signed image links
+- `GET /admin/orders/:id/download/details`
+  - downloads details JSON
+- `GET /admin/orders/:id/download/image`
+  - downloads image file
+- `GET /admin/orders/:id/download/zip`
+  - optional ZIP containing JSON + image
 
-To learn more about Next.js, take a look at the following resources:
+### Admin Login/Dashboard
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `GET /admin/login` (HTML login page)
+- `POST /auth/login` (Supabase email/password login)
+- `POST /auth/logout`
+- `GET /admin/dashboard` (protected backend-driven HTML dashboard)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Validation, Error Handling, Scalability
 
-## Deploy on Vercel
+- Zod-based request validation
+- Centralized error middleware
+- Helmet + CORS + request logging
+- Rate limiting on API routes
+- Storage object paths partitioned by date for operational manageability
+- DB indexes on `created_at` and `order_id`
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Environment Variables
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Use [backend/.env.example](backend/.env.example) as the template.
+
+## Setup Instructions
+
+1. Install dependencies.
+2. Create Supabase project.
+3. Run SQL from [backend/sql/schema.sql](backend/sql/schema.sql) in Supabase SQL Editor.
+4. Create an admin user in Supabase Auth (email/password).
+5. Copy [backend/.env.example](backend/.env.example) to `.env.local` (or `.env`) and fill values.
+6. Run backend: `npm run backend:dev`.
+7. Run frontend: `npm run dev`.
+8. Open admin login at `http://localhost:4000/admin/login`.
+
+## Notes on Existing Frontend
+
+The Next API route [app/api/submit/route.ts](app/api/submit/route.ts) now acts as a thin proxy to backend `POST /order` and contains no storage/database business logic.
