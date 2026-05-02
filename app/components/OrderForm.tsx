@@ -8,12 +8,15 @@ import { FileUpload } from "./FileUpload";
 import { InputField } from "./InputField";
 import { Loader } from "./Loader";
 import { TemplateSelector } from "./TemplateSelector";
-import { TextAreaField } from "./TextAreaField";
 
 type FieldErrors = Partial<{
   motherName: string;
   receiverName: string;
-  address: string;
+  streetName: string;
+  area: string;
+  city: string;
+  state: string;
+  pinCode: string;
   phone: string;
   template: string;
   photo: string;
@@ -31,7 +34,11 @@ export function OrderForm() {
 
   const [motherName, setMotherName] = useState("");
   const [receiverName, setReceiverName] = useState("");
-  const [address, setAddress] = useState("");
+  const [streetName, setStreetName] = useState("");
+  const [area, setArea] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [pinCode, setPinCode] = useState("");
   const [phone, setPhone] = useState("");
   const [template, setTemplate] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
@@ -55,8 +62,21 @@ export function OrderForm() {
     const rn = receiverName.trim();
     if (!rn) next.receiverName = "Receiver name is required.";
 
-    const addr = address.trim();
-    if (!addr) next.address = "Full address is required.";
+    const sn = streetName.trim();
+    if (!sn) next.streetName = "Street name is required.";
+
+    const ar = area.trim();
+    if (!ar) next.area = "Area is required.";
+
+    const ct = city.trim();
+    if (!ct) next.city = "City is required.";
+
+    const st = state.trim();
+    if (!st) next.state = "State is required.";
+
+    const pc = pinCode.trim();
+    if (!pc) next.pinCode = "Pin code is required.";
+    if (pc && pc.length !== 6) next.pinCode = "Pin code must be exactly 6 digits.";
 
     if (!cleanedPhone) next.phone = "Mobile number is required.";
     if (cleanedPhone && cleanedPhone.length !== 10) next.phone = "Mobile number must be exactly 10 digits.";
@@ -79,7 +99,12 @@ export function OrderForm() {
       fd.append("motherName", motherName.trim());
       fd.append("template", template);
       fd.append("receiverName", receiverName.trim());
-      fd.append("address", address.trim());
+      fd.append(
+        "address",
+        [streetName.trim(), area.trim(), city.trim(), state.trim(), pinCode.trim()]
+          .filter(Boolean)
+          .join(", ")
+      );
       fd.append("phone", cleanedPhone);
       if (photo) fd.append("photo", photo, photo.name);
 
@@ -150,14 +175,54 @@ export function OrderForm() {
 
       <TemplateSelector value={template} onChange={setTemplate} error={errors.template} />
 
-      <TextAreaField
-        label="Full Address"
-        value={address}
-        onChange={setAddress}
-        placeholder="House/Street, City, State, Pincode"
-        error={errors.address}
-        name="address"
-      />
+      <div className="grid gap-4 sm:grid-cols-2">
+        <InputField
+          label="Street Name"
+          value={streetName}
+          onChange={setStreetName}
+          placeholder="Street name"
+          error={errors.streetName}
+          name="streetName"
+          autoComplete="street-address"
+        />
+        <InputField
+          label="Area"
+          value={area}
+          onChange={setArea}
+          placeholder="Area"
+          error={errors.area}
+          name="area"
+          autoComplete="address-line2"
+        />
+        <InputField
+          label="City"
+          value={city}
+          onChange={setCity}
+          placeholder="City"
+          error={errors.city}
+          name="city"
+          autoComplete="address-level2"
+        />
+        <InputField
+          label="State"
+          value={state}
+          onChange={setState}
+          placeholder="State"
+          error={errors.state}
+          name="state"
+          autoComplete="address-level1"
+        />
+        <InputField
+          label="Pin Code"
+          value={pinCode}
+          onChange={(v) => setPinCode(onlyDigits(v).slice(0, 6))}
+          placeholder="Pin code"
+          error={errors.pinCode}
+          inputMode="numeric"
+          name="pinCode"
+          autoComplete="postal-code"
+        />
+      </div>
 
       <InputField
         label="Mobile Number"

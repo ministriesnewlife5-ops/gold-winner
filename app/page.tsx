@@ -47,27 +47,6 @@ export default function Home() {
                       Takes less than 60 seconds. Mobile-first.
                     </div>
                   </div>
-
-                  <div className="mt-10 grid grid-cols-3 gap-3">
-                    <div className="rounded-2xl border border-[color:var(--line-soft)] bg-white/45 p-4">
-                      <div className="text-xs text-[color:var(--surface-text-faint)]">Theme</div>
-                      <div className="mt-1 text-sm font-semibold text-[color:var(--surface-text)]">
-                        Premium Gold
-                      </div>
-                    </div>
-                    <div className="rounded-2xl border border-[color:var(--line-soft)] bg-white/45 p-4">
-                      <div className="text-xs text-[color:var(--surface-text-faint)]">Delivery</div>
-                      <div className="mt-1 text-sm font-semibold text-[color:var(--surface-text)]">
-                        Fast Processing
-                      </div>
-                    </div>
-                    <div className="rounded-2xl border border-[color:var(--line-soft)] bg-white/45 p-4">
-                      <div className="text-xs text-[color:var(--surface-text-faint)]">Personal</div>
-                      <div className="mt-1 text-sm font-semibold text-[color:var(--surface-text)]">
-                        Photo + Note
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </HeroMotion>
 
@@ -75,7 +54,7 @@ export default function Home() {
                 <div className="relative mx-auto w-full max-w-lg">
                   <div className="absolute -inset-4 rounded-[36px] bg-[radial-gradient(circle_at_50%_40%,rgba(255,241,166,0.28),transparent_60%)] blur-2xl" />
                   <div className="relative overflow-hidden rounded-[32px] border border-[color:var(--card-border)] bg-[linear-gradient(180deg,rgba(255,250,240,0.96),rgba(255,241,166,0.62))] shadow-[var(--shadow)]">
-                    <div className="relative aspect-[4/5]">
+                    <div className="relative aspect-[4/4]">
                       <Image
                         src="/mom.svg"
                         alt="Mother's Day"
@@ -107,7 +86,7 @@ export default function Home() {
       </main>
       <footer className="border-t border-[color:var(--line-soft)] py-6">
         <div className="mx-auto w-full max-w-6xl px-5 text-xs text-black sm:px-8">
-          Gold Winner &copy; 2026 All rights reserved: Designed and Developed ❤️ Athryan Tech Solutions
+          Gold Winner &copy; 2026 All rights reserved: Designed and Developed ❤️ Athryan Tech Solution
         </div>
       </footer>
     </div>
