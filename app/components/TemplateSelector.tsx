@@ -8,6 +8,7 @@ export const templates = [
   "வலிகள் போக்கும் என் மருந்து!",
   "The one who fed me love as food!",
   "The root that holds me so I never fall!",
+  "The medicine that heals all my pain!",
 ] as const;
 
 export function TemplateSelector({

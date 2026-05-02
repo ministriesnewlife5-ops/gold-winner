@@ -1,3 +1,5 @@
+require("dotenv").config({ path: require("path").resolve(__dirname, "../../.env") });
+
 const REQUIRED_ENV_VARS = [
   "SUPABASE_URL",
   "SUPABASE_ANON_KEY",
