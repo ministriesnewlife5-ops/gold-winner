@@ -20,6 +20,7 @@ type FieldErrors = Partial<{
   phone: string;
   template: string;
   photo: string;
+  termsAccepted: string;
   submit: string;
 }>;
 
@@ -45,6 +46,8 @@ export function OrderForm() {
 
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [showTerms, setShowTerms] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const cleanedPhone = useMemo(() => onlyDigits(phone), [phone]);
 
@@ -80,6 +83,8 @@ export function OrderForm() {
 
     if (!cleanedPhone) next.phone = "Mobile number is required.";
     if (cleanedPhone && cleanedPhone.length !== 10) next.phone = "Mobile number must be exactly 10 digits.";
+
+    if (!termsAccepted) next.termsAccepted = "You must accept the Terms and Conditions.";
 
     return next;
   }
@@ -241,11 +246,89 @@ export function OrderForm() {
         </div>
       ) : null}
 
+      <div className="flex items-start gap-3">
+        <input
+          type="checkbox"
+          id="termsCheckbox"
+          checked={termsAccepted}
+          onChange={(e) => {
+            setTermsAccepted(e.target.checked);
+            if (e.target.checked) {
+              setErrors((prev) => {
+                const next = { ...prev };
+                delete next.termsAccepted;
+                return next;
+              });
+            }
+          }}
+          className="mt-0.5 h-4 w-4 rounded border border-[color:var(--line-soft)] accent-[color:var(--gold)] cursor-pointer"
+        />
+        <label htmlFor="termsCheckbox" className="text-xs text-[color:var(--surface-text)] cursor-pointer select-none">
+          I accept the{" "}
+          <button
+            type="button"
+            onClick={() => setShowTerms(true)}
+            className="underline hover:text-[color:var(--gold)] transition-colors"
+          >
+            Terms and Conditions
+          </button>
+        </label>
+      </div>
+      {errors.termsAccepted ? <div className="text-xs text-[color:var(--danger-text)]">{errors.termsAccepted}</div> : null}
+
+      {showTerms && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="max-h-[80vh] w-full max-w-lg overflow-y-auto rounded-3xl border border-[color:var(--card-border)] bg-white p-6 shadow-[var(--shadow)]"
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-[color:var(--surface-text)]">
+                Terms and Conditions
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowTerms(false)}
+                className="rounded-full p-2 text-[color:var(--surface-text-faint)] hover:bg-[color:var(--line-soft)] transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+              </button>
+            </div>
+            <ol className="flex flex-col gap-3 text-sm text-[color:var(--surface-text)] list-decimal list-inside">
+              <li>Only one entry per participant will be considered.</li>
+              <li>Submitted content must not be offensive, abusive, or inappropriate.</li>
+              <li>We deserve the right to reject or remove any entry that does not meet guidelines.</li>
+              <li>Participants grant us the right to use submitted photos and messages for marketing, promotional, and communication purposes.</li>
+              <li>We reserve the right to modify, suspend, or cancel the contest at any time.</li>
+            </ol>
+            <div className="mt-6 flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setTermsAccepted(true);
+                  setShowTerms(false);
+                  setErrors((prev) => {
+                    const next = { ...prev };
+                    delete next.termsAccepted;
+                    return next;
+                  });
+                }}
+                className="inline-flex h-10 items-center justify-center rounded-full bg-[color:var(--gold)] px-5 text-sm font-semibold text-[color:var(--text-on-gold)] transition-transform hover:-translate-y-0.5 active:translate-y-0"
+              >
+                I Agree
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <button
           type="button"
           onClick={handleSubmit}
-          disabled={submitting}
+          disabled={submitting || !termsAccepted}
           className="inline-flex h-12 items-center justify-center rounded-full bg-[color:var(--gold)] px-6 text-sm font-semibold text-[color:var(--text-on-gold)] shadow-[var(--button-shadow)] transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 active:translate-y-0"
         >
           {submitting ? <Loader label="Submitting…" /> : "Submit"}

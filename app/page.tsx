@@ -56,7 +56,7 @@ export default function Home() {
                   <div className="relative overflow-hidden rounded-[32px] border border-[color:var(--card-border)] bg-[linear-gradient(180deg,rgba(255,250,240,0.96),rgba(255,241,166,0.62))] shadow-[var(--shadow)]">
                     <div className="relative aspect-[4/4]">
                       <Image
-                        src="/mom.svg"
+                        src="/mom.png"
                         alt="Mother's Day"
                         fill
                         className="object-cover opacity-100"
