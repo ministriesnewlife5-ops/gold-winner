@@ -106,8 +106,8 @@ export default function Home() {
         </section>
       </main>
       <footer className="border-t border-[color:var(--line-soft)] py-6">
-        <div className="mx-auto w-full max-w-6xl px-5 text-xs text-[color:var(--foreground-faint)] sm:px-8">
-          Gold Winner &copy; 2026
+        <div className="mx-auto w-full max-w-6xl px-5 text-xs text-black sm:px-8">
+          Gold Winner &copy; 2026 All rights reserved: Designed and Developed ❤️ Athryan Tech Solutions
         </div>
       </footer>
     </div>
