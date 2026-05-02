@@ -2,6 +2,7 @@ const { idParamSchema } = require("../utils/validators");
 const { listOrders, getOrderById } = require("../services/order.service");
 const { createSignedImageUrl, downloadImageBuffer } = require("../services/storage.service");
 const { buildOrderExportPayload, streamOrderZip } = require("../services/export.service");
+const { generateOrdersCsv } = require("../services/csv.service");
 const { HttpError } = require("../utils/httpError");
 
 async function listOrdersController(req, res) {
@@ -74,7 +75,10 @@ async function dashboardController(req, res) {
 <body>
   <div class="wrap">
     <div class="top">
-      <h1>Admin Orders</h1>
+      <div>
+        <h1>Admin Orders</h1>
+        <a href="/admin/orders/export/csv" style="display: inline-block; margin-top: 0.5rem; padding: 0.5rem 0.9rem; background: #059669; color: white; border-radius: 8px; text-decoration: none; font-size: 14px;">Download All (CSV)</a>
+      </div>
       <form action="/auth/logout" method="post"><button type="submit">Logout</button></form>
     </div>
     <table>
@@ -151,6 +155,15 @@ async function downloadOrderZipController(req, res) {
   streamOrderZip(res, order, buffer, contentType);
 }
 
+async function downloadAllOrdersCsvController(req, res) {
+  const orders = await listOrders();
+  const csv = generateOrdersCsv(orders);
+
+  res.setHeader("Content-Type", "text/csv; charset=utf-8");
+  res.setHeader("Content-Disposition", "attachment; filename=orders.csv");
+  res.send(csv);
+}
+
 module.exports = {
   listOrdersController,
   dashboardController,
@@ -158,4 +171,5 @@ module.exports = {
   downloadOrderDetailsController,
   downloadOrderImageController,
   downloadOrderZipController,
+  downloadAllOrdersCsvController,
 };

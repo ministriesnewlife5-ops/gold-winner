@@ -9,6 +9,7 @@ const {
   downloadOrderDetailsController,
   downloadOrderImageController,
   downloadOrderZipController,
+  downloadAllOrdersCsvController,
 } = require("../controllers/admin.controller");
 
 const router = express.Router();
@@ -31,5 +32,6 @@ router.get(
   asyncHandler(downloadOrderImageController),
 );
 router.get("/admin/orders/:id/download/zip", requireAdminAuth, asyncHandler(downloadOrderZipController));
+router.get("/admin/orders/export/csv", requireAdminAuth, asyncHandler(downloadAllOrdersCsvController));
 
 module.exports = router;

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
+const BACKEND_TIMEOUT_MS = 15000;
+
 function jsonError(message: string, status = 400) {
   return NextResponse.json({ error: message }, { status });
 }
@@ -15,19 +17,42 @@ export async function POST(req: Request) {
 
     const form = await req.formData();
 
-    const backendResponse = await fetch(`${backendBaseUrl.replace(/\/$/, "")}/order`, {
-      method: "POST",
-      body: form,
-    });
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), BACKEND_TIMEOUT_MS);
 
-    const responseBody = (await backendResponse.json()) as {
-      order_id?: string;
-      created_at?: string;
-      error?: string;
-    };
+    let backendResponse: Response;
+    try {
+      backendResponse = await fetch(`${backendBaseUrl.replace(/\/$/, "")}/order`, {
+        method: "POST",
+        body: form,
+        signal: controller.signal,
+      });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown network error";
+      const normalized = message.toLowerCase();
+      if (normalized.includes("abort") || normalized.includes("timeout")) {
+        return jsonError("Backend request timed out. Check backend hosting URL and server health.", 504);
+      }
+      return jsonError(
+        `Failed to connect to backend at ${backendBaseUrl}. Check the backend URL, SSL certificate, firewall, and server status.`,
+        502,
+      );
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    const rawText = await backendResponse.text();
+    let responseBody: { order_id?: string; created_at?: string; error?: string } | null = null;
+
+    try {
+      responseBody = rawText ? (JSON.parse(rawText) as typeof responseBody) : null;
+    } catch {
+      responseBody = null;
+    }
 
     if (!backendResponse.ok || !responseBody.order_id) {
-      return jsonError(responseBody.error || "Failed to submit order", backendResponse.status || 500);
+      const fallback = rawText.trim() || "Failed to submit order";
+      return jsonError(responseBody?.error || fallback, backendResponse.status || 500);
     }
 
     return NextResponse.json({

@@ -8,7 +8,7 @@ const MAX_BYTES = 10 * 1024 * 1024;
 function normalizeOrderPayload(body) {
   return {
     name: String(body.name || body.motherName || "").trim(),
-    message: String(body.message || body.receiverName || "").trim(),
+    message: String(body.message || "Mother's Day Gift Submission").trim(),
     template_id: String(body.template_id || body.template || "").trim(),
     delivery_address: String(body.delivery_address || body.address || "").trim(),
     phone_number: String(body.phone_number || body.phone || "").replace(/\D/g, ""),

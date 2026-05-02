@@ -11,7 +11,6 @@ import { TemplateSelector } from "./TemplateSelector";
 
 type FieldErrors = Partial<{
   motherName: string;
-  receiverName: string;
   streetName: string;
   area: string;
   city: string;
@@ -34,7 +33,6 @@ export function OrderForm() {
   const router = useRouter();
 
   const [motherName, setMotherName] = useState("");
-  const [receiverName, setReceiverName] = useState("");
   const [streetName, setStreetName] = useState("");
   const [area, setArea] = useState("");
   const [city, setCity] = useState("");
@@ -61,9 +59,6 @@ export function OrderForm() {
     if (!photo) next.photo = "Photo is required.";
 
     if (!template) next.template = "Please select a template.";
-
-    const rn = receiverName.trim();
-    if (!rn) next.receiverName = "Receiver name is required.";
 
     const sn = streetName.trim();
     if (!sn) next.streetName = "Street name is required.";
@@ -103,7 +98,6 @@ export function OrderForm() {
       const fd = new FormData();
       fd.append("motherName", motherName.trim());
       fd.append("template", template);
-      fd.append("receiverName", receiverName.trim());
       fd.append(
         "address",
         [streetName.trim(), area.trim(), city.trim(), state.trim(), pinCode.trim()]
@@ -150,15 +144,6 @@ export function OrderForm() {
           name="motherName"
           autoComplete="off"
         />
-        <InputField
-          label="Receiver Name"
-          value={receiverName}
-          onChange={setReceiverName}
-          placeholder="Who will receive it?"
-          error={errors.receiverName}
-          name="receiverName"
-          autoComplete="name"
-        />
       </div>
 
       <FileUpload
@@ -180,7 +165,9 @@ export function OrderForm() {
 
       <TemplateSelector value={template} onChange={setTemplate} error={errors.template} />
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="mt-4">
+        <h3 className="text-base font-semibold text-[color:var(--surface-text)] mb-4">Communication Address</h3>
+        <div className="grid gap-4 sm:grid-cols-2">
         <InputField
           label="Street Name"
           value={streetName}
@@ -227,6 +214,7 @@ export function OrderForm() {
           name="pinCode"
           autoComplete="postal-code"
         />
+        </div>
       </div>
 
       <InputField
