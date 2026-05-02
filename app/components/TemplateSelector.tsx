@@ -3,31 +3,11 @@
 import { motion } from "framer-motion";
 
 export const templates = [
-  "The silent architect of my dreams.",
-  "Our family's unshakable foundation.",
-  "The gold standard of unconditional love.",
-  "The anchor that keeps us grounded.",
-  "A heart as resilient and timeless as gold.",
-  "To the woman who is the flavor of my childhood.",
-  "The secret ingredient in every happy memory.",
-  "The keeper of our most cherished family traditions.",
-  "The heartbeat of our kitchen and our home.",
-  "The master chef who nourishes my soul.",
-  "My compassionate guide through every stage of life.",
-  "The fierce protector of our family's happiness.",
-  "Her wisdom is more valuable than any fortune.",
-  "A guardian angel who walks beside us daily.",
-  "The North Star that always leads me home.",
-  "The ultimate role model for a life well-lived.",
-  "She believed in me long before I believed in myself.",
-  "An inspiring spirit with boundless energy.",
-  "Changing the world through small acts of love.",
-  "Every win I have is a reflection of your support.",
-  "The best friend I was lucky enough to be born with.",
-  "Her laughter is the brightest light in our house.",
-  "The golden thread that connects all our hearts.",
-  "An endless listener who always has time for my stories.",
-  "The perfect definition of grace and a golden heart.",
+  "கருவறை கடந்தும் தொடரும் அன்பு!",
+  "என் முதல் ஆசான் என் அம்மா!",
+  "வலிகள் போக்கும் என் மருந்து!",
+  "The one who fed me love as food!",
+  "The root that holds me so I never fall!",
 ] as const;
 
 export function TemplateSelector({
